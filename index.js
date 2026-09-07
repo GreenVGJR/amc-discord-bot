@@ -13,7 +13,7 @@ const { QuorielEdge } = require("@quoriel/edge");
 // const { ForgeDB } = require("@tryforge/forge.db");
 
 // Extractor
-const { YoutubeiExtractor } = require("discord-player-youtubei");
+const { YoutubeExtractor } = require("discord-player-youtubei");
 const { SoundcloudExtractor } = require("discord-player-soundcloud");
 const { SpotifyExtractor } = require("discord-player-spotify");
 const { AppleMusicExtractor } = require("discord-player-applemusic");
@@ -54,7 +54,7 @@ const music = new ForgeMusic({
     connectOptions: {
         disableFallbackStream: true,
         disableBiquad: true,
-        bufferingTimeout: 250,
+        ...(!toggles.useNativeStream && { bufferingTimeout: 250 }),
         connectionTimeout: 30000,
         volume: 50,
         leaveOnEmpty: false,
@@ -96,7 +96,7 @@ music.player.extractors.register(SoundcloudExtractor);
 music.player.extractors.register(SpotifyExtractor);
 music.player.extractors.register(AppleMusicExtractor);
 music.player.extractors.register(AttachmentExtractor);
-music.player.extractors.register(YoutubeiExtractor, youtube);
+music.player.extractors.register(YoutubeExtractor, youtube);
 
 client.functions.load("back/functions");
 quorielDb.commands.load("back/client/fdb");

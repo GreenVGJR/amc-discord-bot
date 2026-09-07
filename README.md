@@ -20,9 +20,9 @@ ___
 2. Clone the repository and install dependencies:
 
 ```bash
-git clone -b fs-main-local https://github.com/GreenVGJR/amc.git
+git clone -b fs-dev-local https://github.com/GreenVGJR/amc.git
 cd amc
-npm install --allow-git=all
+npm install
 ```
 3. Navigate to that folder and rename `.env.example` file to `.env`
 4. Add your [Discord token bot](https://discord.com/developers/applications) inside `.env` at `DISCORD_TOKEN=yourtokenhere`
@@ -77,7 +77,7 @@ ___
 </summary>
 
 1. Navigate to this file `back/config.json`
-2. Changes for 'useClientYT' to `ANDROID_VR`
+2. Changes for 'useClientYT' to either `ANDROID_VR` or `ANDROID_VR_DOWN`
 3. Restart the client and follow the instructions
 
 </details>

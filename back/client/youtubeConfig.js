@@ -1,4 +1,4 @@
-const { default_userAgent_desktop, streamTypeYT, useClientYT, cacheTrackYT, skipOnCheckFormat } = require('../config.json');
+const { default_userAgent_desktop, streamTypeYT, useClientYT, cacheTrackYT, skipOnCheckFormat, useNativeStream } = require('../config.json');
 const ytClients = require('./youtubeClients.js');
 const targetClient = useClientYT?.toUpperCase();
 const useClient = ytClients?.[targetClient];
@@ -23,7 +23,7 @@ const path = require('path');
 const cacheDir = path.join(__dirname, 'ytCacheTracks');
 fs.mkdirSync(cacheDir, { recursive: true });
 
-const { initBotGuard, refreshBotGuardIntegrity, generateCbPot, generateSessionPoToken, generateAnonPOT, setVisitorData } = require('./youtubeBG.js');
+const { initBotGuard, refreshBotGuardIntegrity, generateCbPot, generateSessionPoToken, generateAnonPOT, setVisitorData, invalidateBotGuard } = require('./youtubeBG.js');
 
 let vt;
 let datasyncID = "";
@@ -606,7 +606,7 @@ async function fallbackYTStream(lstracks) {
 
         const cpn = randomBytes(12).toString('base64url');
 
-        const isVRnAuth = ytauth?.token && targetClient === "ANDROID_VR";
+        const isVRnAuth = ytauth?.token && (targetClient === "ANDROID_VR" || targetClient=== "ANDROID_VR_DOWN");
 
         if (isWebClient && !actuallk.configInfo?.coldConfigData && !isEmbeddedClient) {
             if (!vt) await generateVisitor();
@@ -647,8 +647,8 @@ async function fallbackYTStream(lstracks) {
         }).then(r => r.json());
 
         const hasAuth = isVRnAuth || !!ytcookies;
-        const forceAuthClients = ['WEB_PARENT', 'WEB_CREATOR', 'ANDROID_VR'];
-        const forceLegacyClients = ['MWEB'];
+        const forceAuthClients = ['WEB_PARENT', 'WEB_CREATOR', 'ANDROID_VR', 'ANDROID_VR_DOWN'];
+        const forceLegacyClients = [];
         const mustUseAuth = forceAuthClients.includes(targetClient);
 
         const embeddedThirdParty = embeddedContext?.thirdParty
@@ -840,6 +840,36 @@ async function fallbackYTStream(lstracks) {
                     }
                 }
 
+                // Cap-boundary probe: media servers serve ~768KB even with a bad
+                // pot, then 403. A tiny ranged GET at the boundary proves the pot
+                // up front; on 403, re-attest once with a fresh challenge.
+                if (isWebClient && contentPoToken && !skipOnCheckFormat) {
+                    const totalLen = parseInt(((frso && !forceLegacy ? frso : fsFmt)?.contentLength) || 0);
+                    if (Number.isFinite(totalLen) && totalLen > 786432 + 512) {
+                        const probeAt = 786432;
+                        const probePot = (url) => fetch(`${url}&range=${probeAt}-${probeAt + 255}`, {
+                            headers: { "User-Agent": APIuserAgent }
+                        }).then(r => r.status).catch(() => 0);
+                        if ((await probePot(finalWithPot)) === 403) {
+                            Logger.info(`/ [YoutubeConfig] poToken rejected at cap boundary, re-attesting`);
+                            invalidateBotGuard();
+                            try {
+                                const retryPot = await generateCbPot(videoId, actuallk.visitorData);
+                                if (retryPot.isReal) {
+                                    const retryEncoded = encodeURIComponent(retryPot.token);
+                                    const rebuilt = secfinalurl.includes("pot=")
+                                        ? secfinalurl.replace(/([?&])pot=[^&]*/, `$1pot=${retryEncoded}`)
+                                        : (secfinalurl + "&pot=" + retryEncoded);
+                                    if ((await probePot(rebuilt)) !== 403) {
+                                        contentPoToken = retryEncoded;
+                                        finalWithPot = rebuilt;
+                                    }
+                                }
+                            } catch { /* keep original URL; existing 403 handling applies */ }
+                        }
+                    }
+                }
+
                 if (filterlocation.status === 403 && changeLength) {
                     if (isWebClient && !forceLegacy) {
                         continue;
@@ -905,16 +935,8 @@ async function fallbackYTStream(lstracks) {
 
 module.exports = {
     get cookie() { return ytcookiesapi; },
-    generateWithPoToken: false,
-    disablePlayer: false,
-    ignoreSignInErrors: true,
-    slicePlaylist: true,
-    useYoutubeDL: false,
-    innertubeConfigRaw: {
-        generate_session_locally: true
-    },
-    createStream: async (q) => {
+    createStream: useNativeStream ? {} : async (q) => {
         try { return await fallbackYTStream(q.url); }
-        catch { return; }
+        catch { return undefined; }
     }
 }

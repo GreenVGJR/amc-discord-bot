@@ -41,6 +41,21 @@ const list_clients = {
         "osName": "Android",
         "osVersion": "12L"
     },
+    // doesn't support stream kids contents
+    // required oauth2
+    "ANDROID_VR_DOWN": {
+        "targetDomain": "youtubei.googleapis.com",
+        "client_id": "652469312169-4lvs9bnhr9lpns9v451j5oivd81vjvu1.apps.googleusercontent.com",
+        "client_secret": "3fTWrBJI5Uojm1TK7_iJCW5Z",
+        "clientName": 28,
+        "clientVersion": "1.00.0",
+        "deviceMake": "Oculus",
+        "deviceModel": "Quest 3",
+        "androidSdkVersion": 32,
+        "userAgent": "com.google.android.apps.youtube.vr.oculus/1.00.0 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip",
+        "osName": "Android",
+        "osVersion": "12L"
+    },
     // enforced SABR-only for music video
     // required youtubei.js for solve n challenge
     // required youtube cookies
@@ -49,7 +64,7 @@ const list_clients = {
         "client_id": null,
         "client_secret": null,
         "clientName": 88,
-        "clientVersion": "1.20260720",
+        "clientVersion": "1.20260904",
         "clientFormFactor": "UNKNOWN_FORM_FACTOR",
         "deviceMake": "",
         "deviceModel": ""
@@ -63,7 +78,7 @@ const list_clients = {
         "client_id": null,
         "client_secret": null,
         "clientName": 67,
-        "clientVersion": "1.20260720",
+        "clientVersion": "1.20260904",
         "clientFormFactor": "UNKNOWN_FORM_FACTOR",
         "deviceMake": "",
         "deviceModel": ""
@@ -75,7 +90,7 @@ const list_clients = {
         "client_id": null,
         "client_secret": null,
         "clientName": 62,
-        "clientVersion": "1.20260720",
+        "clientVersion": "1.20260904",
         "clientFormFactor": "UNKNOWN_FORM_FACTOR",
         "deviceMake": "",
         "deviceModel": ""
@@ -88,7 +103,7 @@ const list_clients = {
         "client_id": null,
         "client_secret": null,
         "clientName": 2,
-        "clientVersion": "2.20260720",
+        "clientVersion": "2.20260904.01.00",
         "clientFormFactor": "UNKNOWN_FORM_FACTOR",
         "deviceMake": "",
         "deviceModel": ""
@@ -100,7 +115,7 @@ const list_clients = {
         "client_id": null,
         "client_secret": null,
         "clientName": 56,
-        "clientVersion": "2.20260708.00.00",
+        "clientVersion": "2.20260904.00.00",
         "clientFormFactor": "UNKNOWN_FORM_FACTOR",
         "embedded": true,
         "embedUrl": "https://www.reddit.com/",
