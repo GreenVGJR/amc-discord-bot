@@ -606,7 +606,7 @@ async function fallbackYTStream(lstracks) {
 
         const cpn = randomBytes(12).toString('base64url');
 
-        const isVRnAuth = ytauth?.token && (targetClient === "ANDROID_VR" || targetClient=== "ANDROID_VR_DOWN");
+        const isVRnAuth = ytauth?.token && (targetClient === "ANDROID_VR" || targetClient === "ANDROID_VR_DOWN");
 
         if (isWebClient && !actuallk.configInfo?.coldConfigData && !isEmbeddedClient) {
             if (!vt) await generateVisitor();
